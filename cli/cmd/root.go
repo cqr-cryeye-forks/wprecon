@@ -26,9 +26,9 @@ func RootOptionsRun(cmd *cobra.Command, args []string) {
 	} else if confidence < 40.0 && confidence > 15.0 && !database.Memory.GetBool("Force") {
 		confidenceString := fmt.Sprintf("%.2f%%", confidence)
 
-		if q := printer.ScanQ("I'm not absolutely sure that this target is using wordpress!", confidenceString, "chance. do you wish to continue ? [Y]es | [n]o : "); q != "y" && q != "\n" {
-			printer.Fatal("Exiting...")
-		}
+// 		if q := printer.ScanQ("I'm not absolutely sure that this target is using wordpress!", confidenceString, "chance. do you wish to continue ? [Y]es | [n]o : "); q != "y" && q != "\n" {
+// 			printer.Fatal("Exiting...")
+// 		}
 		printer.Println()
 	} else if confidence < 15.0 && !database.Memory.GetBool("Force") {
 		printer.Fatal("This target is not running wordpress!")
@@ -62,9 +62,9 @@ func RootOptionsRun(cmd *cobra.Command, args []string) {
 				}
 			}
 
-			if scan := printer.ScanQ("Do you wish to continue ?! [Y]es | [n]o : "); scan != "y" && scan != "\n" {
-				printer.Fatal("Exiting...")
-			}
+// 			if scan := printer.ScanQ("Do you wish to continue ?! [Y]es | [n]o : "); scan != "y" && scan != "\n" {
+// 				printer.Fatal("Exiting...")
+// 			}
 		} else {
 			printer.Warning(":: No WAF was detected! But that doesn't mean it doesn't. ::")
 		}
