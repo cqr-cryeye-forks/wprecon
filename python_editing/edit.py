@@ -1,6 +1,24 @@
 import re
 
 
+def clean_list(
+        data: list,
+) -> list:
+    clean_users = []
+
+    for item in data:  # Skip the first item (usually metadata or header)
+        item = item.strip()  # Remove leading/trailing spaces
+        item = item.replace("(Feed)", "").strip()  # Remove "(Feed)" and extra spaces
+
+        # Stop processing when the string starts with 'All users were found at'
+        if item.startswith("All users were found at"):
+            break
+
+        clean_users.append(item)
+
+    return clean_users
+
+
 def save_as_dict(
         data: str,
 ) -> dict:
@@ -80,7 +98,7 @@ def edit(data: str):
 
         elif el.find('WordPress Users') != -1:
             el = list(filter(None, re.split(': |\n', el)))
-            result['wp_users'] = el[1:]  # array
+            result['wp_users'] = clean_list(el[1:])  # array
 
         elif el.find('Target information(s):') != -1:
             target = save_as_dict(el.replace('Target information(s):\n', ''))
