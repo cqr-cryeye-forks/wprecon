@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
+    "io"
 
 	"github.com/blackbinn/wprecon/internal/database"
 	"github.com/blackbinn/wprecon/pkg/gohttp"
@@ -27,7 +28,7 @@ type multiWriter struct {
 func newMultiWriter(filename string) *multiWriter {
 	file, err := os.Create(filename)
 	if err != nil {
-		log.Fatalf("Failed to create log file: %v", err)
+
 	}
 	return &multiWriter{
 		file:   file,
