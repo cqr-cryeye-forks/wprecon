@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 	"strings"
 
 	"github.com/blackbinn/wprecon/internal/database"
@@ -16,6 +17,44 @@ import (
 	"github.com/spf13/cobra"
 )
 
+
+// Custom writer for duplicating output to file and stdout
+type multiWriter struct {
+	file   *os.File
+	stdout io.Writer
+}
+
+func newMultiWriter(filename string) *multiWriter {
+	file, err := os.Create(filename)
+	if err != nil {
+		log.Fatalf("Failed to create log file: %v", err)
+	}
+	return &multiWriter{
+		file:   file,
+		stdout: os.Stdout,
+	}
+}
+
+func (w *multiWriter) Write(p []byte) (int, error) {
+	// Write to file and stdout
+	_, err := w.file.Write(p)
+	if err != nil {
+		return 0, err
+	}
+	return w.stdout.Write(p)
+}
+
+func (w *multiWriter) Close() error {
+	return w.file.Close()
+}
+
+func init() {
+	// Initialize custom writer and set printer output
+	writer := newMultiWriter("output_to_parse.txt")
+	printer.SetOutput(writer)
+	defer writer.Close()
+}
+
 func RootOptionsRun(cmd *cobra.Command, args []string) {
 	aggressivemode, _ := cmd.Flags().GetBool("aggressive-mode")
 	detectionwaf, _ := cmd.Flags().GetBool("detection-waf")
@@ -26,7 +65,7 @@ func RootOptionsRun(cmd *cobra.Command, args []string) {
 	} else if confidence < 40.0 && confidence > 15.0 && !database.Memory.GetBool("Force") {
 // 		confidenceString := fmt.Sprintf("%.2f%%", confidence)
 
-// 		if q := printer.ScanQ("I'm not absolutely sure that this target is using wordpress!", confidenceString, "chance. do you wish to continue ? [Y]es | [n]o : "); q != "y" && q != "\n" {
+// 		"I'm not absolutely sure that this target is using wordpress!", confidenceString, "chance. do you wish to continue ? [Y]es | [n]o : "); q != "y" && q != "\n" {
 // 			printer.Fatal("Exiting...")
 // 		}
 		printer.Println()

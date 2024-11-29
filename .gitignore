@@ -19,3 +19,6 @@
 wprecon
 .vscode/launch.json
 .idea
+
+*.txt
+*.json
