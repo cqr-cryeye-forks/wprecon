@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"os"
 	"strings"
-	"io"
-	"log"
 
 	"github.com/blackbinn/wprecon/internal/database"
 	"github.com/blackbinn/wprecon/pkg/gohttp"
@@ -20,46 +18,7 @@ import (
 )
 
 
-var outputFile *os.File
-
-// Wrap a writer to write to both console and file
-type MultiWriter struct {
-	writers []io.Writer
-}
-
-func (mw *MultiWriter) Write(p []byte) (n int, err error) {
-	for _, w := range mw.writers {
-		n, err = w.Write(p)
-		if err != nil {
-			return n, err
-		}
-	}
-	return n, nil
-}
-
-func initOutput(outputFileName string) {
-	var err error
-	outputFile, err = os.Create(outputFileName)
-	if err != nil {
-		log.Fatalf("Failed to create output file: %v", err)
-	}
-
-	// Redirect printer output to both console and file
-	printer.SetWriter(&MultiWriter{
-		writers: []io.Writer{os.Stdout, outputFile},
-	})
-}
-
-func closeOutput() {
-	if outputFile != nil {
-		outputFile.Close()
-	}
-}
-
 func RootOptionsRun(cmd *cobra.Command, args []string) {
-	defer closeOutput() // Ensure file is closed on function exit
-
-	initOutput("output_to_parse.txt") // Initialize output redirection
 
 	aggressivemode, _ := cmd.Flags().GetBool("aggressive-mode")
 	detectionwaf, _ := cmd.Flags().GetBool("detection-waf")
