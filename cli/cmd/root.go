@@ -21,10 +21,10 @@ func RootOptionsRun(cmd *cobra.Command, args []string) {
 	detectionwaf, _ := cmd.Flags().GetBool("detection-waf")
 
 	if confidence := extensions.WordpressCheck(); confidence >= 40.0 {
-		confidenceString := fmt.Sprintf("%.2f%%", confidence)
-		printer.Done("WordPress confirmed with", confidenceString, "confidence!").L()
+// 		confidenceString := fmt.Sprintf("%.2f%%", confidence)
+// 		printer.Done("WordPress confirmed with", confidenceString, "confidence!").L()
 	} else if confidence < 40.0 && confidence > 15.0 && !database.Memory.GetBool("Force") {
-		confidenceString := fmt.Sprintf("%.2f%%", confidence)
+// 		confidenceString := fmt.Sprintf("%.2f%%", confidence)
 
 // 		if q := printer.ScanQ("I'm not absolutely sure that this target is using wordpress!", confidenceString, "chance. do you wish to continue ? [Y]es | [n]o : "); q != "y" && q != "\n" {
 // 			printer.Fatal("Exiting...")
