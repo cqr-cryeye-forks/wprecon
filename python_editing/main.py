@@ -21,7 +21,3 @@ def main():
     print(f"Final results save to {output_file.absolute().as_uri()}")
 
     return result
-
-
-if __name__ == '__main__':
-    main()
