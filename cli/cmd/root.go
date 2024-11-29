@@ -37,9 +37,9 @@ func (mw *MultiWriter) Write(p []byte) (n int, err error) {
 	return n, nil
 }
 
-func initOutput() {
+func initOutput(outputFileName string) {
 	var err error
-	outputFile, err = os.Create("output_to_parse.txt")
+	outputFile, err = os.Create(outputFileName)
 	if err != nil {
 		log.Fatalf("Failed to create output file: %v", err)
 	}
@@ -59,7 +59,7 @@ func closeOutput() {
 func RootOptionsRun(cmd *cobra.Command, args []string) {
 	defer closeOutput() // Ensure file is closed on function exit
 
-	initOutput() // Initialize output redirection
+	initOutput("output_to_parse.txt") // Initialize output redirection
 
 	aggressivemode, _ := cmd.Flags().GetBool("aggressive-mode")
 	detectionwaf, _ := cmd.Flags().GetBool("detection-waf")

@@ -13,7 +13,7 @@ import (
 
 var (
 	stdin    = *os.Stdin
-	stdout   = *os.Stdout
+	stdout   io.Writer = os.Stdout // Change from `*os.File` to `io.Writer`
 	stderr   = *os.Stderr
 	line     = &ln{}
 	zfill    = &z{}
@@ -37,6 +37,11 @@ var (
 )
 
 var seekCurrent = 1
+
+// SetWriter updates the stdout writer.
+func SetWriter(w io.Writer) {
+	stdout = w
+}
 
 func init() {
 	if runtime.GOOS == "windows" {
