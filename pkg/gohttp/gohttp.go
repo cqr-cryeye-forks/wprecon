@@ -202,9 +202,9 @@ func (options *httpOptions) f(http *Response) {
 			printer.List("Solve:", solve).Warning()
 		}
 
-		if response := printer.ScanQ("Do you wish to continue ? [y]es | [N]o : "); response != "y" {
-			printer.Fatal("Exiting...")
-		}
+// 		if response := printer.ScanQ("Do you wish to continue ? [y]es | [N]o : "); response != "y" {
+// 			printer.Fatal("Exiting...")
+// 		}
 
 		printer.Println()
 		firewallPassing = true
