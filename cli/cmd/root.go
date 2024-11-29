@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"os"
 	"strings"
-    "io"
+	"io"
+	"log"
 
 	"github.com/blackbinn/wprecon/internal/database"
 	"github.com/blackbinn/wprecon/pkg/gohttp"
@@ -19,44 +20,47 @@ import (
 )
 
 
-// Custom writer for duplicating output to file and stdout
-type multiWriter struct {
-	file   *os.File
-	stdout io.Writer
+var outputFile *os.File
+
+// Wrap a writer to write to both console and file
+type MultiWriter struct {
+	writers []io.Writer
 }
 
-func newMultiWriter(filename string) *multiWriter {
-	file, err := os.Create(filename)
+func (mw *MultiWriter) Write(p []byte) (n int, err error) {
+	for _, w := range mw.writers {
+		n, err = w.Write(p)
+		if err != nil {
+			return n, err
+		}
+	}
+	return n, nil
+}
+
+func initOutput() {
+	var err error
+	outputFile, err = os.Create("output_to_parse.txt")
 	if err != nil {
+		log.Fatalf("Failed to create output file: %v", err)
+	}
 
-	}
-	return &multiWriter{
-		file:   file,
-		stdout: os.Stdout,
-	}
+	// Redirect printer output to both console and file
+	printer.SetWriter(&MultiWriter{
+		writers: []io.Writer{os.Stdout, outputFile},
+	})
 }
 
-func (w *multiWriter) Write(p []byte) (int, error) {
-	// Write to file and stdout
-	_, err := w.file.Write(p)
-	if err != nil {
-		return 0, err
+func closeOutput() {
+	if outputFile != nil {
+		outputFile.Close()
 	}
-	return w.stdout.Write(p)
-}
-
-func (w *multiWriter) Close() error {
-	return w.file.Close()
-}
-
-func init() {
-	// Initialize custom writer and set printer output
-	writer := newMultiWriter("output_to_parse.txt")
-	printer.SetOutput(writer)
-	defer writer.Close()
 }
 
 func RootOptionsRun(cmd *cobra.Command, args []string) {
+	defer closeOutput() // Ensure file is closed on function exit
+
+	initOutput() // Initialize output redirection
+
 	aggressivemode, _ := cmd.Flags().GetBool("aggressive-mode")
 	detectionwaf, _ := cmd.Flags().GetBool("detection-waf")
 
